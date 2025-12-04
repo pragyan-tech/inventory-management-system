@@ -23,7 +23,7 @@ public class ProductRestExceptionHandler {
             ProductErrorResponse error = new ProductErrorResponse();
 
             error.setStatus(HttpStatus.BAD_REQUEST.value());
-            error.setMessage("Bad Request: " + exc.getMessage()); // Or just "Invalid Request"
+            error.setMessage("Bad Request: " + exc.getMessage()); 
             error.setTimestamp(System.currentTimeMillis());
 
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
