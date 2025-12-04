@@ -52,12 +52,11 @@ public class ProductRestController {
 
         Product tempProduct = productService.findById(productId);
 
-        // throw exception if null
+       
         if (tempProduct == null) {
             throw new RuntimeException("Product id not found - " + productId);
         }
 
-        // throw exception if request body contains "id" key
         if (patchPayload.containsKey("id")) {
             throw new RuntimeException("Product id not allowed in request body - " + productId);
         }
@@ -72,10 +71,8 @@ public class ProductRestController {
     private Product apply(Map<String, Object> patchPayload, Product tempProduct) {
         ObjectNode productNode = objectMapper.convertValue(tempProduct, ObjectNode.class);
 
-        // Convert the patchPayload map to a JSON object node
         ObjectNode patchNode = objectMapper.convertValue(patchPayload, ObjectNode.class);
 
-        // Merge the patch updates into the product node
         productNode.setAll(patchNode);
 
         return objectMapper.convertValue(productNode, Product.class);
@@ -85,8 +82,6 @@ public class ProductRestController {
     public String deleteProduct(@PathVariable int productId) {
 
         Product tempProduct = productService.findById(productId);
-
-        // throw exception if null
 
         if (tempProduct == null) {
             throw new RuntimeException("Product id not found - " + productId);
