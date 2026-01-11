@@ -1,4 +1,4 @@
-package com.luv2code.springboot.demo.exception;
+package com.pragyan.inventory.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

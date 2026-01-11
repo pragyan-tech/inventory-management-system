@@ -1,4 +1,4 @@
-package com.luv2code.springboot.demo.security;
+package com.pragyan.inventory.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +14,11 @@ import javax.sql.DataSource;
 @Configuration
 public class SecurityConfig {
 
-    // 1. Tell Spring to use your JDBC (Database) users
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
     }
 
-    // 2. Define the Rules (The Firewall)
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
@@ -38,10 +36,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
         );
 
-        // Use HTTP Basic authentication
         http.httpBasic(Customizer.withDefaults());
 
-        // Disable CSRF (Cross-Site Request Forgery) - essential for non-browser REST clients
         http.csrf(csrf -> csrf.disable());
 
         return http.build();

@@ -1,6 +1,6 @@
-package com.luv2code.springboot.demo.service;
+package com.pragyan.inventory.service;
 
-import com.luv2code.springboot.demo.entity.Product;
+import com.pragyan.inventory.entity.Product;
 
 import java.util.List;
 

@@ -1,13 +1,13 @@
-package com.luv2code.springboot.demo;
+package com.pragyan.inventory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CrudDemoApplication {
+public class InventoryApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CrudDemoApplication.class, args);
+		SpringApplication.run(InventoryApplication.class, args);
 	}
 
 }

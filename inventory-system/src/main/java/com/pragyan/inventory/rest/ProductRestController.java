@@ -1,9 +1,9 @@
-package com.luv2code.springboot.demo.rest;
+package com.pragyan.inventory.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.luv2code.springboot.demo.entity.Product;
-import com.luv2code.springboot.demo.service.ProductService;
+import com.pragyan.inventory.entity.Product;
+import com.pragyan.inventory.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,16 +48,14 @@ public class ProductRestController {
 
     @PatchMapping("/products/{productId}")
     public Product patchProduct(@PathVariable int productId,
-                                 @RequestBody Map<String, Object> patchPayload) {
+                                @RequestBody Map<String, Object> patchPayload) {
 
         Product tempProduct = productService.findById(productId);
 
-        // throw exception if null
         if (tempProduct == null) {
             throw new RuntimeException("Product id not found - " + productId);
         }
 
-        // throw exception if request body contains "id" key
         if (patchPayload.containsKey("id")) {
             throw new RuntimeException("Product id not allowed in request body - " + productId);
         }
@@ -72,10 +70,8 @@ public class ProductRestController {
     private Product apply(Map<String, Object> patchPayload, Product tempProduct) {
         ObjectNode productNode = objectMapper.convertValue(tempProduct, ObjectNode.class);
 
-        // Convert the patchPayload map to a JSON object node
         ObjectNode patchNode = objectMapper.convertValue(patchPayload, ObjectNode.class);
 
-        // Merge the patch updates into the product node
         productNode.setAll(patchNode);
 
         return objectMapper.convertValue(productNode, Product.class);
@@ -86,7 +82,6 @@ public class ProductRestController {
 
         Product tempProduct = productService.findById(productId);
 
-        // throw exception if null
 
         if (tempProduct == null) {
             throw new RuntimeException("Product id not found - " + productId);

@@ -1,4 +1,4 @@
-package com.luv2code.springboot.demo.exception;
+package com.pragyan.inventory.exception;
 
 
 public class ProductNotFoundException extends RuntimeException {

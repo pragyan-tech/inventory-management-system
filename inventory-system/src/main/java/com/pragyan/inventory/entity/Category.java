@@ -1,4 +1,4 @@
-package com.luv2code.springboot.demo.entity;
+package com.pragyan.inventory.entity;
 
 import jakarta.persistence.*;
 

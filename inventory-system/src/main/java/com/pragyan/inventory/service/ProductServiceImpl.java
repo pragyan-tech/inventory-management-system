@@ -1,8 +1,8 @@
-package com.luv2code.springboot.demo.service;
+package com.pragyan.inventory.service;
 
-import com.luv2code.springboot.demo.dao.ProductRepository;
-import com.luv2code.springboot.demo.entity.Product;
-import com.luv2code.springboot.demo.exception.ProductNotFoundException;
+import com.pragyan.inventory.dao.ProductRepository;
+import com.pragyan.inventory.entity.Product;
+import com.pragyan.inventory.exception.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
         return theProduct;
     }
 
-
+    
     @Override
     public Product save(Product product) {
         return ProductRepository.save(product);
