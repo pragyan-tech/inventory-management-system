@@ -23,16 +23,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        // READ access: Everyone (Employees, Managers, Admins)
                         .requestMatchers(HttpMethod.GET, "/api/products").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/products/**").hasRole("EMPLOYEE")
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").hasRole("EMPLOYEE")
 
-                        // CREATE/UPDATE access: Managers and Admins only
                         .requestMatchers(HttpMethod.POST, "/api/products").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/products").hasRole("MANAGER")
 
-                        // DELETE access: Admins ONLY
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
         );
 
