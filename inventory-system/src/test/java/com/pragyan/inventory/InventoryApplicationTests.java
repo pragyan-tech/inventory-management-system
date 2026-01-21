@@ -1,10 +1,10 @@
-package com.luv2code.springboot.demo;
+package com.pragyan.inventory;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class InventoryApplicationTests {
 
 	@Test
 	void contextLoads() {
