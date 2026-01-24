@@ -58,7 +58,7 @@ Use these credentials to generate a **Bearer Token** at the `/api/auth/login` en
 
 1.  **Clone the Repo:**
     ```bash
-    git clone [https://github.com/pragyan-tech/inventory-management-system.git](https://github.com/pragyan-tech/inventory-management-system.git)
+    git clone [https://github.com/pragyan-tech/inventory-management-system.git]
     ```
 2.  **Configure MySQL:**
     * Update `src/main/resources/application.properties` with your MySQL username/password.
