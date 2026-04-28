@@ -1,12 +1,12 @@
 package com.pragyan.inventory.service;
 
 import com.pragyan.inventory.entity.Product;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
-    List<Product> findAll();
-    Product findById(int id);
+    Page<Product> findAll(String search, Pageable pageable);
+    Product findById(Long id);
     Product save(Product product);
-    void deleteById(int id);
+    void deleteById(Long id);
 }
