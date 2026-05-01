@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Package, LayoutDashboard, LogOut } from "lucide-react";
 
 export default function Layout({ children }) {
-  const { user, logout } = useAuth();
+  const { user, role, logout } = useAuth();
   const location = useLocation();
 
   const navItems = [
@@ -44,6 +44,9 @@ export default function Layout({ children }) {
           <div className="px-3 py-2 mb-2">
             <p className="text-xs text-slate-500">Signed in as</p>
             <p className="text-sm text-white truncate">{user?.email}</p>
+            <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded bg-indigo-500/20 text-indigo-300">
+              {role}
+            </span>
           </div>
           <button
             onClick={logout}

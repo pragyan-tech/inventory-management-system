@@ -11,10 +11,17 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const tokenResult = await firebaseUser.getIdTokenResult();
+        setRole(tokenResult.claims.role || "EMPLOYEE");
+      } else {
+        setRole(null);
+      }
       setUser(firebaseUser);
       setLoading(false);
     });
@@ -29,7 +36,22 @@ export function AuthProvider({ children }) {
 
   const logout = () => signOut(auth);
 
-  const value = { user, loading, signup, login, logout };
+
+  const isAdmin = role === "ADMIN";
+  const isManager = role === "MANAGER" || role === "ADMIN";
+  const isEmployee = role === "EMPLOYEE" || role === "MANAGER" || role === "ADMIN";
+
+  const value = {
+    user,
+    role,
+    loading,
+    signup,
+    login,
+    logout,
+    isAdmin,
+    isManager,
+    isEmployee,
+  };
 
   return (
     <AuthContext.Provider value={value}>

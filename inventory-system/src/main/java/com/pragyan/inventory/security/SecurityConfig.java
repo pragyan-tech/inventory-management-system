@@ -44,6 +44,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**")
                         .hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**")
+                        .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/categories/**")
+                        .hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/categories/**")
+                        .hasAnyRole("MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/categories/**")
+                        .hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,17 +1,68 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Search, Loader2, AlertCircle } from "lucide-react";
-import { fetchProducts } from "../api/products";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { fetchProducts, createProduct, updateProduct, deleteProduct } from "../api/products";
+import { useAuth } from "../context/AuthContext";
+import Modal from "../components/Modal";
+import ProductForm from "../components/ProductForm";
 
 export default function Products() {
+  const { isManager, isAdmin } = useAuth();
+  const queryClient = useQueryClient();
+
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [deletingProduct, setDeletingProduct] = useState(null);
+
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["products", { page, search }],
     queryFn: () => fetchProducts({ page, size: 10, search }),
     keepPreviousData: true,
+  });
+
+
+  const createMutation = useMutation({
+    mutationFn: createProduct,
+    onSuccess: () => {
+      toast.success("Product created successfully");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setIsAddModalOpen(false);
+    },
+    onError: (err) => {
+      const message = err.response?.data?.message || "Failed to create product";
+      toast.error(message);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateProduct,
+    onSuccess: () => {
+      toast.success("Product updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setEditingProduct(null);
+    },
+    onError: (err) => {
+      const message = err.response?.data?.message || "Failed to update product";
+      toast.error(message);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteProduct,
+    onSuccess: () => {
+      toast.success("Product deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setDeletingProduct(null);
+    },
+    onError: (err) => {
+      const message = err.response?.data?.message || "Failed to delete product";
+      toast.error(message);
+    },
   });
 
   const handleSearch = (e) => {
@@ -22,13 +73,24 @@ export default function Products() {
 
   return (
     <div className="p-8">
-
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Products</h1>
-        <p className="text-slate-400 mt-1">Manage your inventory</p>
+      {/* Header */}
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Products</h1>
+          <p className="text-slate-400 mt-1">Manage your inventory</p>
+        </div>
+        {isManager && (
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+          >
+            <Plus size={18} />
+            Add Product
+          </button>
+        )}
       </div>
 
-
+      {/* Search bar */}
       <form onSubmit={handleSearch} className="mb-6 flex gap-2">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
@@ -66,6 +128,7 @@ export default function Products() {
         </div>
       )}
 
+      {/* Products table */}
       {data && (
         <>
           <div className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden">
@@ -77,12 +140,13 @@ export default function Products() {
                   <th className="px-6 py-3">Category</th>
                   <th className="px-6 py-3 text-right">Price</th>
                   <th className="px-6 py-3 text-right">Stock</th>
+                  {isManager && <th className="px-6 py-3 text-right">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {data.content.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-slate-500">
+                    <td colSpan={isManager ? 6 : 5} className="px-6 py-12 text-center text-slate-500">
                       No products found
                     </td>
                   </tr>
@@ -106,6 +170,28 @@ export default function Products() {
                           {product.unitsInStock} in stock
                         </span>
                       </td>
+                      {isManager && (
+                        <td className="px-6 py-4 text-sm text-right">
+                          <div className="flex justify-end gap-3">
+                            <button
+                              onClick={() => setEditingProduct(product)}
+                              className="text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 transition-colors"
+                            >
+                              <Pencil size={14} />
+                              Edit
+                            </button>
+                            {isAdmin && (
+                              <button
+                                onClick={() => setDeletingProduct(product)}
+                                className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 transition-colors"
+                              >
+                                <Trash2 size={14} />
+                                Delete
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}
@@ -113,7 +199,7 @@ export default function Products() {
             </table>
           </div>
 
-
+          {/* Pagination */}
           {data.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-slate-400">
@@ -139,6 +225,82 @@ export default function Products() {
           )}
         </>
       )}
+
+
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Add New Product"
+        size="lg"
+      >
+        <ProductForm
+          onSubmit={(data) => createMutation.mutateAsync(data)}
+          onCancel={() => setIsAddModalOpen(false)}
+          submitLabel="Create Product"
+        />
+      </Modal>
+      {/* Edit Product Modal */}
+      <Modal
+        isOpen={editingProduct !== null}
+        onClose={() => setEditingProduct(null)}
+        title="Edit Product"
+        size="lg"
+      >
+        {editingProduct && (
+          <ProductForm
+            initialValues={{
+              id: editingProduct.id,
+              sku: editingProduct.sku,
+              name: editingProduct.name,
+              description: editingProduct.description || "",
+              unitPrice: editingProduct.unitPrice,
+              unitsInStock: editingProduct.unitsInStock,
+              categoryId: editingProduct.category?.id || "",
+            }}
+            onSubmit={(data) => updateMutation.mutateAsync(data)}
+            onCancel={() => setEditingProduct(null)}
+            submitLabel="Update Product"
+          />
+        )}
+      </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deletingProduct !== null}
+        onClose={() => setDeletingProduct(null)}
+        title="Delete Product"
+        size="sm"
+      >
+        {deletingProduct && (
+          <div>
+            <p className="text-slate-300 mb-2">
+              Are you sure you want to delete this product?
+            </p>
+            <div className="bg-slate-800 border border-slate-700 rounded-lg p-3 mb-6">
+              <p className="text-white font-medium">{deletingProduct.name}</p>
+              <p className="text-slate-400 text-sm font-mono mt-1">{deletingProduct.sku}</p>
+            </div>
+            <p className="text-red-400/80 text-sm mb-6">
+              This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeletingProduct(null)}
+                className="flex-1 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+                disabled={deleteMutation.isPending}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteMutation.mutate(deletingProduct.id)}
+                disabled={deleteMutation.isPending}
+                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
