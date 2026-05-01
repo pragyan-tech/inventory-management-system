@@ -6,6 +6,7 @@ import Products from "./pages/Products";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
+import StockHistory from "./pages/StockHistory";
 
 function PublicRoute({ children }) {
   const { user } = useAuth();
@@ -34,6 +35,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Products />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <StockHistory />
               </Layout>
             </ProtectedRoute>
           }

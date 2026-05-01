@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Package, LayoutDashboard, LogOut } from "lucide-react";
+import { Package, LayoutDashboard, LogOut, History } from "lucide-react";
+
 
 export default function Layout({ children }) {
   const { user, role, logout } = useAuth();
@@ -9,6 +10,7 @@ export default function Layout({ children }) {
   const navItems = [
     { to: "/", label: "Dashboard", icon: LayoutDashboard },
     { to: "/products", label: "Products", icon: Package },
+    { to: "/history", label: "Stock History", icon: History },
   ];
 
   return (

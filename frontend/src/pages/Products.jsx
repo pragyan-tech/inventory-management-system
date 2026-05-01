@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History } from "lucide-react";
 import { toast } from "sonner";
 import { fetchProducts, createProduct, updateProduct, deleteProduct } from "../api/products";
 import { useAuth } from "../context/AuthContext";
 import Modal from "../components/Modal";
 import ProductForm from "../components/ProductForm";
+import { Link } from "react-router-dom";
+
 
 export default function Products() {
   const { isManager, isAdmin } = useAuth();
@@ -140,13 +142,13 @@ export default function Products() {
                   <th className="px-6 py-3">Category</th>
                   <th className="px-6 py-3 text-right">Price</th>
                   <th className="px-6 py-3 text-right">Stock</th>
-                  {isManager && <th className="px-6 py-3 text-right">Actions</th>}
+                  <th className="px-6 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
                 {data.content.length === 0 ? (
                   <tr>
-                    <td colSpan={isManager ? 6 : 5} className="px-6 py-12 text-center text-slate-500">
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
                       No products found
                     </td>
                   </tr>
@@ -170,9 +172,16 @@ export default function Products() {
                           {product.unitsInStock} in stock
                         </span>
                       </td>
-                      {isManager && (
-                        <td className="px-6 py-4 text-sm text-right">
-                          <div className="flex justify-end gap-3">
+                      <td className="px-6 py-4 text-sm text-right">
+                        <div className="flex justify-end gap-3">
+                          <Link
+                            to={`/history?productId=${product.id}`}
+                            className="text-slate-400 hover:text-white inline-flex items-center gap-1 transition-colors"
+                          >
+                            <History size={14} />
+                            History
+                          </Link>
+                          {isManager && (
                             <button
                               onClick={() => setEditingProduct(product)}
                               className="text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 transition-colors"
@@ -180,18 +189,18 @@ export default function Products() {
                               <Pencil size={14} />
                               Edit
                             </button>
-                            {isAdmin && (
-                              <button
-                                onClick={() => setDeletingProduct(product)}
-                                className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 transition-colors"
-                              >
-                                <Trash2 size={14} />
-                                Delete
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      )}
+                          )}
+                          {isAdmin && (
+                            <button
+                              onClick={() => setDeletingProduct(product)}
+                              className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 transition-colors"
+                            >
+                              <Trash2 size={14} />
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))
                 )}

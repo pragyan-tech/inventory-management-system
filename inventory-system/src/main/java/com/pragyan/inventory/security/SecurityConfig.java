@@ -54,6 +54,9 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
+                        .requestMatchers(HttpMethod.GET, "/api/movements/**")
+                        .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);
