@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import Modal from "../components/Modal";
 import ProductForm from "../components/ProductForm";
 import { Link } from "react-router-dom";
+import { transformImage } from "../lib/cloudinary";
 
 
 export default function Products() {
@@ -137,6 +138,7 @@ export default function Products() {
             <table className="w-full">
               <thead className="bg-slate-800 text-left text-xs uppercase tracking-wider text-slate-400">
                 <tr>
+                    <th className="px-6 py-3 w-20"></th>
                   <th className="px-6 py-3">SKU</th>
                   <th className="px-6 py-3">Name</th>
                   <th className="px-6 py-3">Category</th>
@@ -148,13 +150,26 @@ export default function Products() {
               <tbody className="divide-y divide-slate-800">
                 {data.content.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                    <td colSpan="7" className="px-6 py-12 text-center text-slate-500">
                       No products found
                     </td>
                   </tr>
                 ) : (
                   data.content.map((product) => (
                     <tr key={product.id} className="hover:bg-slate-800/30 transition-colors">
+                      <td className="px-6 py-4">
+                            {product.imageUrl ? (
+                              <img
+                                src={transformImage(product.imageUrl, { width: 60, height: 60, crop: "fill" })}
+                                alt={product.name}
+                                className="w-12 h-12 rounded-lg object-cover bg-slate-800"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
+                                <span className="text-slate-600 text-xs">—</span>
+                              </div>
+                            )}
+                          </td>
                       <td className="px-6 py-4 text-sm text-slate-400 font-mono">{product.sku}</td>
                       <td className="px-6 py-4 text-sm text-white font-medium">{product.name}</td>
                       <td className="px-6 py-4 text-sm text-slate-400">{product.category?.categoryName ?? "—"}</td>
@@ -265,6 +280,7 @@ export default function Products() {
               unitPrice: editingProduct.unitPrice,
               unitsInStock: editingProduct.unitsInStock,
               categoryId: editingProduct.category?.id || "",
+              imageUrl: editingProduct.imageUrl || null,
             }}
             onSubmit={(data) => updateMutation.mutateAsync(data)}
             onCancel={() => setEditingProduct(null)}

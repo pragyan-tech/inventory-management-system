@@ -32,7 +32,7 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" })
       onClick={onClose}
     >
       <div
-        className={`w-full ${sizeClasses[size]} bg-slate-900 border border-slate-700 rounded-xl shadow-2xl`}
+        className={`w-full ${sizeClasses[size]} max-h-[90vh] flex flex-col bg-slate-900 border border-slate-700 rounded-xl shadow-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -47,7 +47,7 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" })
         </div>
 
         {/* Body */}
-        <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

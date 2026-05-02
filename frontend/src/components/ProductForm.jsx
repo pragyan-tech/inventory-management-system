@@ -1,10 +1,11 @@
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { fetchCategories } from "../api/categories";
 import Input from "./Input";
 import Button from "./Button";
+import ImageUpload from "./ImageUpload";
 
 const productSchema = z.object({
   sku: z.string().min(1, "SKU is required").max(50, "SKU too long"),
@@ -13,6 +14,7 @@ const productSchema = z.object({
   unitPrice: z.coerce.number().min(0, "Price must be positive"),
   unitsInStock: z.coerce.number().int("Must be a whole number").min(0, "Cannot be negative"),
   categoryId: z.coerce.number().int().min(1, "Please select a category"),
+  imageUrl: z.string().nullable().optional(),
 });
 
 export default function ProductForm({ initialValues, onSubmit, onCancel, submitLabel = "Save" }) {
@@ -23,6 +25,7 @@ export default function ProductForm({ initialValues, onSubmit, onCancel, submitL
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -34,6 +37,7 @@ export default function ProductForm({ initialValues, onSubmit, onCancel, submitL
       unitPrice: 0,
       unitsInStock: 0,
       categoryId: "",
+      imageUrl: null,
     },
   });
 
@@ -45,6 +49,7 @@ export default function ProductForm({ initialValues, onSubmit, onCancel, submitL
       description: data.description || "",
       unitPrice: data.unitPrice,
       unitsInStock: data.unitsInStock,
+      imageUrl: data.imageUrl || null,
       category: { id: data.categoryId },
     };
     await onSubmit(payload);
@@ -52,6 +57,16 @@ export default function ProductForm({ initialValues, onSubmit, onCancel, submitL
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+        <Controller
+            name="imageUrl"
+            control={control}
+            render={({ field }) => (
+              <ImageUpload
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="SKU"
