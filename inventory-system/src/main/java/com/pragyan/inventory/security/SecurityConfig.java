@@ -56,7 +56,14 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/movements/**")
                         .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
-
+                        // CSV operations
+                        .requestMatchers(HttpMethod.GET, "/api/csv/export/**")
+                        .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/csv/import/**")
+                        .hasAnyRole("MANAGER", "ADMIN")
+                        // PDF reports
+                        .requestMatchers(HttpMethod.GET, "/api/pdf/**")
+                        .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);

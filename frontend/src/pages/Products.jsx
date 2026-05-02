@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History } from "lucide-react";
+import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History, Download, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { fetchProducts, createProduct, updateProduct, deleteProduct } from "../api/products";
+import { fetchProducts, createProduct, updateProduct, deleteProduct, exportProductsCsv } from "../api/products";
 import { useAuth } from "../context/AuthContext";
 import Modal from "../components/Modal";
 import ProductForm from "../components/ProductForm";
 import { Link } from "react-router-dom";
 import { transformImage } from "../lib/cloudinary";
-
+import ImportProductsModal from "../components/ImportProductsModal";
 
 export default function Products() {
   const { isManager, isAdmin } = useAuth();
   const queryClient = useQueryClient();
 
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -67,6 +68,14 @@ export default function Products() {
       toast.error(message);
     },
   });
+  const handleExport = async () => {
+    try {
+      await exportProductsCsv();
+      toast.success("Products exported successfully");
+    } catch (err) {
+      toast.error("Export failed: " + (err.message || "Unknown error"));
+    }
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -82,15 +91,33 @@ export default function Products() {
           <h1 className="text-3xl font-bold text-white">Products</h1>
           <p className="text-slate-400 mt-1">Manage your inventory</p>
         </div>
-        {isManager && (
+        <div className="flex gap-2">
           <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors border border-slate-700"
           >
-            <Plus size={18} />
-            Add Product
+            <Download size={18} />
+            Export CSV
           </button>
-        )}
+          {isManager && (
+            <button
+              onClick={() => setIsImportModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors border border-slate-700"
+            >
+              <Upload size={18} />
+              Import CSV
+            </button>
+          )}
+          {isManager && (
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <Plus size={18} />
+              Add Product
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Search bar */}
@@ -326,6 +353,10 @@ export default function Products() {
           </div>
         )}
       </Modal>
+      <ImportProductsModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+      />
     </div>
   );
 }
