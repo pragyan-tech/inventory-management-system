@@ -64,6 +64,9 @@ public class SecurityConfig {
                         // PDF reports
                         .requestMatchers(HttpMethod.GET, "/api/pdf/**")
                         .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
+                        // Analytics — read-only, all roles
+                        .requestMatchers(HttpMethod.GET, "/api/analytics/**")
+                        .hasAnyRole("EMPLOYEE", "MANAGER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);
