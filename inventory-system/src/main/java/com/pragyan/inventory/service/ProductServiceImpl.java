@@ -15,15 +15,20 @@ import java.util.Optional;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private static final int LOW_STOCK_THRESHOLD = 10;
+
+    private final AlertPublisher alertPublisher;
     private final ProductRepository productRepository;
     private final StockMovementService stockMovementService;
 
     public ProductServiceImpl(
             ProductRepository productRepository,
-            StockMovementService stockMovementService
+            StockMovementService stockMovementService,
+            AlertPublisher alertPublisher
     ) {
         this.productRepository = productRepository;
         this.stockMovementService = stockMovementService;
+        this.alertPublisher = alertPublisher;
     }
 
     @Override
@@ -45,7 +50,6 @@ public class ProductServiceImpl implements ProductService {
         int oldStock = 0;
 
         if (!isNew) {
-            // Existing product — fetch current stock to calculate delta
             Product existing = findById(product.getId());
             oldStock = existing.getUnitsInStock();
         }
@@ -54,27 +58,26 @@ public class ProductServiceImpl implements ProductService {
         int newStock = saved.getUnitsInStock();
         int delta = newStock - oldStock;
 
-        // Record a movement only if it's new OR stock actually changed
+        // Audit logging
         if (isNew) {
-            stockMovementService.record(
-                    saved,
-                    MovementType.INITIAL,
-                    newStock,
-                    newStock,
-                    "Product created"
-            );
+            stockMovementService.record(saved, MovementType.INITIAL, newStock, newStock,
+                    "Product created");
         } else if (delta != 0) {
             MovementType type = delta > 0 ? MovementType.STOCK_IN : MovementType.STOCK_OUT;
-            stockMovementService.record(
-                    saved,
-                    type,
-                    delta,
-                    newStock,
-                    "Stock adjusted via update"
-            );
+            stockMovementService.record(saved, type, delta, newStock,
+                    "Stock adjusted via update");
         }
-        // If delta == 0 (e.g., name change but stock unchanged), we don't log a movement
-        // This is a design choice — see notes below
+
+
+        boolean crossedIntoLowStock = (isNew || oldStock > LOW_STOCK_THRESHOLD)
+                && newStock <= LOW_STOCK_THRESHOLD
+                && newStock > 0;
+
+        boolean crossedIntoOutOfStock = (isNew || oldStock > 0) && newStock == 0;
+
+        if (crossedIntoLowStock || crossedIntoOutOfStock) {
+            alertPublisher.publishLowStockAlert(saved, LOW_STOCK_THRESHOLD);
+        }
 
         return saved;
     }

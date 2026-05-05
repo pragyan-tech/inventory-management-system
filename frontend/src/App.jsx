@@ -7,6 +7,7 @@ import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import StockHistory from "./pages/StockHistory";
+import AlertsListener from "./components/AlertsListener";
 
 function PublicRoute({ children }) {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ function PublicRoute({ children }) {
 function App() {
   return (
     <BrowserRouter>
+        <AlertsListener />
       <Routes>
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />

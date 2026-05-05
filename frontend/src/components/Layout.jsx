@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Package, LayoutDashboard, LogOut, History } from "lucide-react";
+import AlertsBell from "./AlertsBell";
 
 
 export default function Layout({ children }) {
@@ -61,8 +62,16 @@ export default function Layout({ children }) {
       </aside>
 
 
-      <main className="flex-1 overflow-auto">
-        {children}
+      <main className="flex-1 overflow-auto flex flex-col">
+        <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-10">
+          <div className="flex items-center justify-end px-8 py-3">
+            <AlertsBell />
+          </div>
+        </header>
+
+        <div className="flex-1">
+          {children}
+        </div>
       </main>
     </div>
   );
