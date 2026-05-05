@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History, Download, Upload } from "lucide-react";
+import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History, Download, Upload, ScanLine } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { fetchProducts, createProduct, updateProduct, deleteProduct, exportProductsCsv } from "../api/products";
+import { transformImage } from "../lib/cloudinary";
 import { useAuth } from "../context/AuthContext";
 import Modal from "../components/Modal";
 import ProductForm from "../components/ProductForm";
-import { Link } from "react-router-dom";
-import { transformImage } from "../lib/cloudinary";
 import ImportProductsModal from "../components/ImportProductsModal";
+import ScanProductModal from "../components/ScanProductModal";
 
 export default function Products() {
   const { isManager, isAdmin } = useAuth();
@@ -21,6 +22,18 @@ export default function Products() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [deletingProduct, setDeletingProduct] = useState(null);
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+
+  useEffect(() => {
+    if (!highlightId) return;
+    const timeout = setTimeout(() => {
+      searchParams.delete("highlight");
+      setSearchParams(searchParams, { replace: true });
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }, [highlightId, searchParams, setSearchParams]);
 
 
   const { data, isLoading, isError, error } = useQuery({
@@ -92,6 +105,13 @@ export default function Products() {
           <p className="text-slate-400 mt-1">Manage your inventory</p>
         </div>
         <div className="flex gap-2">
+            <button
+                onClick={() => setIsScanModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors border border-slate-700"
+              >
+                <ScanLine size={18} />
+                Scan
+              </button>
           <button
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors border border-slate-700"
@@ -183,7 +203,12 @@ export default function Products() {
                   </tr>
                 ) : (
                   data.content.map((product) => (
-                    <tr key={product.id} className="hover:bg-slate-800/30 transition-colors">
+                    <tr
+                        key={product.id}
+                        className={`hover:bg-slate-800/30 transition-colors ${
+                          highlightId == product.id ? "bg-indigo-500/20 ring-2 ring-indigo-500/50" : ""
+                        }`}
+                      >
                       <td className="px-6 py-4">
                             {product.imageUrl ? (
                               <img
@@ -356,6 +381,10 @@ export default function Products() {
       <ImportProductsModal
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
+      />
+      <ScanProductModal
+        isOpen={isScanModalOpen}
+        onClose={() => setIsScanModalOpen(false)}
       />
     </div>
   );
