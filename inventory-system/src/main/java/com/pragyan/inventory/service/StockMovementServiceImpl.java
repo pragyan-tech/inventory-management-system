@@ -46,11 +46,11 @@ public class StockMovementServiceImpl implements StockMovementService {
 
     @Override
     public Page<StockMovement> findAll(Pageable pageable) {
-        return stockMovementRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return stockMovementRepository.findAllWithProduct(pageable);
     }
 
     @Override
     public Page<StockMovement> findByProductId(Long productId, Pageable pageable) {
-        return stockMovementRepository.findByProductIdOrderByCreatedAtDesc(productId, pageable);
+        return stockMovementRepository.findByProductIdWithProduct(productId, pageable);
     }
 }

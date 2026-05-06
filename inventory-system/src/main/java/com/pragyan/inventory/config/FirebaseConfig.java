@@ -4,25 +4,37 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-@Component
+@Configuration
 public class FirebaseConfig {
 
+    @Value("${app.firebase.service-account-path}")
+    private String serviceAccountPath;
+
+    private final ResourceLoader resourceLoader;
+
+    public FirebaseConfig(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
     @PostConstruct
-    public void init() throws IOException {
+    public void init() throws Exception {
         if (FirebaseApp.getApps().isEmpty()) {
-            try (InputStream serviceAccount =
-                         new ClassPathResource("firebase-service-account.json").getInputStream()) {
+            Resource resource = resourceLoader.getResource(serviceAccountPath);
+
+            try (InputStream is = resource.getInputStream()) {
                 FirebaseOptions options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setCredentials(GoogleCredentials.fromStream(is))
                         .build();
+
                 FirebaseApp.initializeApp(options);
-                System.out.println("✅ Firebase Admin SDK initialized successfully");
+                System.out.println("Firebase Admin SDK initialized successfully!!");
             }
         }
     }
