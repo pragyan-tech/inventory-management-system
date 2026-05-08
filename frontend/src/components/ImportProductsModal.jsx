@@ -80,7 +80,7 @@ export default function ImportProductsModal({ isOpen, onClose }) {
 
             {selectedFile ? (
               <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 flex items-center gap-3">
-                <FileText className="text-indigo-400 flex-shrink-0" size={24} />
+                <FileText className="text-emerald-400 flex-shrink-0" size={24} />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium truncate">{selectedFile.name}</p>
                   <p className="text-slate-500 text-sm">{(selectedFile.size / 1024).toFixed(1)} KB</p>
@@ -194,7 +194,7 @@ export default function ImportProductsModal({ isOpen, onClose }) {
               type="button"
               onClick={handleImport}
               disabled={!selectedFile || importMutation.isPending}
-              className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {importMutation.isPending ? (
                 <>

@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { ArrowUpRight, ArrowDownRight, Plus, RefreshCw, Loader2, ArrowRight } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Plus, RefreshCw, Loader2, ArrowRight, Clock } from "lucide-react";
 import { fetchMovements } from "../../api/movements";
+import Skeleton from "../Skeleton";
+import EmptyState from "../EmptyState";
 
 const movementConfig = {
   INITIAL: { icon: Plus, color: "text-blue-400", bg: "bg-blue-500/10" },
@@ -38,7 +40,7 @@ export default function RecentActivity() {
         </div>
         <Link
           to="/history"
-          className="flex items-center gap-1 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+          className="flex items-center gap-1 text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
         >
           View all
           <ArrowRight size={14} />
@@ -46,15 +48,26 @@ export default function RecentActivity() {
       </div>
 
       {isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="animate-spin text-slate-500" size={24} />
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-3 p-3">
+              <Skeleton className="w-8 h-8 rounded-lg" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-3 w-32" />
+                <Skeleton className="h-2 w-48" />
+              </div>
+              <Skeleton className="h-4 w-12" />
+            </div>
+          ))}
         </div>
       )}
 
       {data && data.content.length === 0 && (
-        <div className="py-8 text-center">
-          <p className="text-slate-500 text-sm">No activity yet</p>
-        </div>
+        <EmptyState
+          icon={Clock}
+          title="No activity yet"
+          description="Stock changes will appear here as they happen."
+        />
       )}
 
       {data && data.content.length > 0 && (

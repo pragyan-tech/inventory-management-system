@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, Link } from "react-router-dom";
-import { Loader2, AlertCircle, ArrowUpRight, ArrowDownRight, Plus, Minus, RefreshCw, ArrowLeft } from "lucide-react";
+import { Loader2, AlertCircle, ArrowUpRight, ArrowDownRight, Plus, Minus, RefreshCw, ArrowLeft, History } from "lucide-react";
 import { fetchMovements, fetchProductMovements } from "../api/movements";
+import EmptyState from "../components/EmptyState";
 
 
 const movementConfig = {
@@ -81,12 +82,11 @@ export default function StockHistory() {
       {data && (
         <>
           {data.content.length === 0 ? (
-            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-12 text-center">
-              <p className="text-slate-500">No stock movements recorded yet</p>
-              <p className="text-slate-600 text-sm mt-1">
-                Movements will appear here as products are created or updated
-              </p>
-            </div>
+            <EmptyState
+              icon={History}
+              title="No stock movements yet"
+              description="When products are created or updated, the changes will appear here as an audit trail."
+            />
           ) : (
             <div className="space-y-2">
               {data.content.map((movement) => {

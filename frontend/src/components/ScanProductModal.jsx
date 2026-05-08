@@ -63,7 +63,7 @@ export default function ScanProductModal({ isOpen, onClose }) {
 
         {scanState === "searching" && (
           <div className="bg-slate-800 border border-slate-700 rounded-lg p-8 text-center">
-            <ScanLine className="text-indigo-400 mx-auto mb-3 animate-pulse" size={32} />
+            <ScanLine className="text-emerald-400 mx-auto mb-3 animate-pulse" size={32} />
             <p className="text-white font-medium">Searching for product...</p>
             <p className="text-slate-400 text-sm font-mono mt-1">{scannedCode}</p>
           </div>
@@ -142,7 +142,7 @@ export default function ScanProductModal({ isOpen, onClose }) {
 
                   navigate(`/products?highlight=${foundProduct.id}`);
                 }}
-                className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
               >
                 View Product
               </button>
@@ -153,7 +153,7 @@ export default function ScanProductModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={handleScanAgain}
-              className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
             >
               Scan Again
             </button>

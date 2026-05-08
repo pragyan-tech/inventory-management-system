@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History, Download, Upload, ScanLine } from "lucide-react";
+import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History, Download, Upload, ScanLine, Package } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { fetchProducts, createProduct, updateProduct, deleteProduct, exportProductsCsv } from "../api/products";
@@ -10,6 +10,7 @@ import Modal from "../components/Modal";
 import ProductForm from "../components/ProductForm";
 import ImportProductsModal from "../components/ImportProductsModal";
 import ScanProductModal from "../components/ScanProductModal";
+import EmptyState from "../components/EmptyState";
 
 export default function Products() {
   const { isManager, isAdmin } = useAuth();
@@ -131,7 +132,7 @@ export default function Products() {
           {isManager && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
             >
               <Plus size={18} />
               Add Product
@@ -149,12 +150,12 @@ export default function Products() {
             placeholder="Search by name, SKU, or description..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
           />
         </div>
         <button
           type="submit"
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
         >
           Search
         </button>
@@ -182,46 +183,61 @@ export default function Products() {
       {data && (
         <>
           <div className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-slate-800 text-left text-xs uppercase tracking-wider text-slate-400">
-                <tr>
-                    <th className="px-6 py-3 w-20"></th>
-                  <th className="px-6 py-3">SKU</th>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Category</th>
-                  <th className="px-6 py-3 text-right">Price</th>
-                  <th className="px-6 py-3 text-right">Stock</th>
-                  <th className="px-6 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {data.content.length === 0 ? (
+            {data.content.length === 0 ? (
+              <EmptyState
+                icon={Package}
+                title={search ? "No products match your search" : "No products yet"}
+                description={
+                  search
+                    ? "Try a different search term or check the spelling."
+                    : "Add your first product to start tracking inventory."
+                }
+                action={
+                  !search && isManager && (
+                    <button
+                      onClick={() => setIsAddModalOpen(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+                    >
+                      <Plus size={18} />
+                      Add your first product
+                    </button>
+                  )
+                }
+              />
+            ) : (
+              <table className="w-full">
+                <thead className="bg-slate-800 text-left text-xs uppercase tracking-wider text-slate-400">
                   <tr>
-                    <td colSpan="7" className="px-6 py-12 text-center text-slate-500">
-                      No products found
-                    </td>
+                    <th className="px-6 py-3 w-20"></th>
+                    <th className="px-6 py-3">SKU</th>
+                    <th className="px-6 py-3">Name</th>
+                    <th className="px-6 py-3">Category</th>
+                    <th className="px-6 py-3 text-right">Price</th>
+                    <th className="px-6 py-3 text-right">Stock</th>
+                    <th className="px-6 py-3 text-right">Actions</th>
                   </tr>
-                ) : (
-                  data.content.map((product) => (
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {data.content.map((product) => (
                     <tr
-                        key={product.id}
-                        className={`hover:bg-slate-800/30 transition-colors ${
-                          highlightId == product.id ? "bg-indigo-500/20 ring-2 ring-indigo-500/50" : ""
-                        }`}
-                      >
+                      key={product.id}
+                      className={`hover:bg-slate-800/30 transition-colors ${
+                        highlightId == product.id ? "bg-emerald-500/20 ring-2 ring-emerald-500/50" : ""
+                      }`}
+                    >
                       <td className="px-6 py-4">
-                            {product.imageUrl ? (
-                              <img
-                                src={transformImage(product.imageUrl, { width: 60, height: 60, crop: "fill" })}
-                                alt={product.name}
-                                className="w-12 h-12 rounded-lg object-cover bg-slate-800"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
-                                <span className="text-slate-600 text-xs">—</span>
-                              </div>
-                            )}
-                          </td>
+                        {product.imageUrl ? (
+                          <img
+                            src={transformImage(product.imageUrl, { width: 60, height: 60, crop: "fill" })}
+                            alt={product.name}
+                            className="w-12 h-12 rounded-lg object-cover bg-slate-800"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center">
+                            <span className="text-slate-600 text-xs">—</span>
+                          </div>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-sm text-slate-400 font-mono">{product.sku}</td>
                       <td className="px-6 py-4 text-sm text-white font-medium">{product.name}</td>
                       <td className="px-6 py-4 text-sm text-slate-400">{product.category?.categoryName ?? "—"}</td>
@@ -251,7 +267,7 @@ export default function Products() {
                           {isManager && (
                             <button
                               onClick={() => setEditingProduct(product)}
-                              className="text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 transition-colors"
+                              className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 transition-colors"
                             >
                               <Pencil size={14} />
                               Edit
@@ -269,10 +285,10 @@ export default function Products() {
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Pagination */}

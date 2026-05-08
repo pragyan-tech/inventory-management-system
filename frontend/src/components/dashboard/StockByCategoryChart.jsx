@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Loader2, AlertCircle } from "lucide-react";
 import { fetchStockByCategory } from "../../api/analytics";
+import Skeleton from "../Skeleton";
 
 const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
 
@@ -32,7 +33,11 @@ export default function StockByCategoryChart() {
       </div>
 
       <div className="flex-1 flex items-center justify-center">
-        {isLoading && <Loader2 className="animate-spin text-slate-500" size={32} />}
+        {isLoading && (
+          <div className="w-full h-full flex items-center justify-center">
+            <Skeleton className="w-48 h-48 rounded-full" />
+          </div>
+        )}
 
         {isError && (
           <div className="flex items-center gap-2 text-red-400 text-sm">

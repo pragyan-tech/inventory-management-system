@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
@@ -8,6 +9,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import StockHistory from "./pages/StockHistory";
 import AlertsListener from "./components/AlertsListener";
+import MeshBackground from "./components/MeshBackground";
+import PageTransition from "./components/PageTransition";
 
 function PublicRoute({ children }) {
   const { user } = useAuth();
@@ -15,19 +18,40 @@ function PublicRoute({ children }) {
   return children;
 }
 
-function App() {
+function AnimatedRoutes() {
+  const location = useLocation();
+
   return (
-    <BrowserRouter>
-        <AlertsListener />
-      <Routes>
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <PageTransition>
+                <Login />
+              </PageTransition>
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <PageTransition>
+                <Signup />
+              </PageTransition>
+            </PublicRoute>
+          }
+        />
 
         <Route
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <PageTransition>
+                <Home />
+              </PageTransition>
             </ProtectedRoute>
           }
         />
@@ -36,7 +60,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Products />
+                <PageTransition>
+                  <Products />
+                </PageTransition>
               </Layout>
             </ProtectedRoute>
           }
@@ -46,7 +72,9 @@ function App() {
           element={
             <ProtectedRoute>
               <Layout>
-                <StockHistory />
+                <PageTransition>
+                  <StockHistory />
+                </PageTransition>
               </Layout>
             </ProtectedRoute>
           }
@@ -54,6 +82,16 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </AnimatePresence>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <MeshBackground />
+      <AlertsListener />
+      <AnimatedRoutes />
     </BrowserRouter>
   );
 }

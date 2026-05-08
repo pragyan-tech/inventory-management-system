@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Loader2, AlertCircle } from "lucide-react";
 import { fetchTopProducts } from "../../api/analytics";
+import Skeleton from "../Skeleton";
 
 function formatCurrency(value) {
   if (value >= 1000) {
@@ -17,7 +18,7 @@ function CustomTooltip({ active, payload }) {
     <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-xl">
       <p className="text-white font-medium">{data.name}</p>
       <p className="text-slate-400 text-xs font-mono">{data.sku}</p>
-      <p className="text-indigo-400 text-sm mt-2">
+      <p className="text-emerald-400 text-sm mt-2">
         Value: ${Number(data.inventoryValue).toLocaleString()}
       </p>
       <p className="text-slate-400 text-xs mt-1">
@@ -41,7 +42,16 @@ export default function TopProductsChart() {
       </div>
 
       <div className="flex-1 flex items-center justify-center">
-        {isLoading && <Loader2 className="animate-spin text-slate-500" size={32} />}
+        {isLoading && (
+          <div className="w-full space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className={`h-4 flex-1`} style={{ maxWidth: `${100 - i * 12}%` }} />
+              </div>
+            ))}
+          </div>
+        )}
 
         {isError && (
           <div className="flex items-center gap-2 text-red-400 text-sm">

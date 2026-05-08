@@ -1,6 +1,5 @@
-.git
-.idea
-.mvn
-mvnw
-mvnw.cmd
-src/
+target/
+.idea/
+.git/
+*.iml
+src/main/resources/firebase-service-account.json

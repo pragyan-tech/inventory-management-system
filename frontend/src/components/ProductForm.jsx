@@ -81,7 +81,7 @@ export default function ProductForm({ initialValues, onSubmit, onCancel, submitL
           <select
             {...register("categoryId")}
             disabled={categoriesLoading}
-            className={`w-full px-3 py-2 bg-slate-800 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors ${
+            className={`w-full px-3 py-2 bg-slate-800 border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-colors ${
               errors.categoryId ? "border-red-500" : "border-slate-700"
             }`}
           >

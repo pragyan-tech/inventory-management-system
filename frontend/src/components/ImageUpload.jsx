@@ -122,7 +122,7 @@ export default function ImageUpload({ value, onChange, label = "Product Image" }
         >
           {uploading ? (
             <>
-              <Loader2 className="text-indigo-400 animate-spin mb-3" size={32} />
+              <Loader2 className="text-emerald-400 animate-spin mb-3" size={32} />
               <p className="text-sm text-slate-400">Uploading... {progress}%</p>
               <div className="w-48 h-1 bg-slate-700 rounded-full mt-2 overflow-hidden">
                 <div
