@@ -11,6 +11,7 @@ import StockHistory from "./pages/StockHistory";
 import AlertsListener from "./components/AlertsListener";
 import MeshBackground from "./components/MeshBackground";
 import PageTransition from "./components/PageTransition";
+import Categories from "./pages/Categories";
 
 function PublicRoute({ children }) {
   const { user } = useAuth();
@@ -62,6 +63,18 @@ function AnimatedRoutes() {
               <Layout>
                 <PageTransition>
                   <Products />
+                </PageTransition>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/categories"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <PageTransition>
+                  <Categories />
                 </PageTransition>
               </Layout>
             </ProtectedRoute>

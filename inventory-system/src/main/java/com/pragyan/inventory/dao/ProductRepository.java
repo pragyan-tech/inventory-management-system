@@ -58,4 +58,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     LIMIT 10
     """)
     List<TopProductProjection> findTopProductsByValue();
+    long countByCategoryId(Long categoryId);
 }

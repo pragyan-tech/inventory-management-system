@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Package, LayoutDashboard, LogOut, History } from "lucide-react";
+import { Package, LayoutDashboard, LogOut, History, FolderTree } from "lucide-react";
 import AlertsBell from "./AlertsBell";
 import Logo from "./Logo";
 
@@ -11,6 +11,7 @@ export default function Layout({ children }) {
   const navItems = [
     { to: "/", label: "Dashboard", icon: LayoutDashboard },
     { to: "/products", label: "Products", icon: Package },
+    { to: "/categories", label: "Categories", icon: FolderTree },
     { to: "/history", label: "Stock History", icon: History },
   ];
 

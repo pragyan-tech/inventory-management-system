@@ -42,13 +42,19 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
             String email = decodedToken.getEmail();
 
             String role = (String) decodedToken.getClaims().getOrDefault("role", "EMPLOYEE");
+            System.out.println("DEBUG: Request URI: " + request.getRequestURI() + " | Method: " + request.getMethod() + " | Role: " + role);
+
+
 
             List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                     new SimpleGrantedAuthority("ROLE_" + role)
             );
 
+
+            System.out.println("DEBUG: User " + uid + " has role: " + role);
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(uid, null, authorities);
+            System.out.println("DEBUG: Setting authority: ROLE_" + role);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -60,5 +66,6 @@ public class FirebaseAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+
     }
 }
