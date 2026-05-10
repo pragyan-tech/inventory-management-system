@@ -341,6 +341,6 @@ The project is feature-complete but here are some ideas for what could come next
 
 Built by **Pragyan Oza**.
 
-[GitHub](https://github.com/pragyan-tech) · [LinkedIn](www.linkedin.com/in/pragyan-oza) 
+[GitHub](https://github.com/pragyan-tech) · [LinkedIn](https://www.linkedin.com/in/pragyan-oza) 
 
 </div>
