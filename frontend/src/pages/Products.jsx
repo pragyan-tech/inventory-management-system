@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History, Download, Upload, ScanLine, Package } from "lucide-react";
+import { Search, Loader2, AlertCircle, Plus, Pencil, Trash2, History, Download, Upload, ScanLine, Package, QrCode } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { fetchProducts, createProduct, updateProduct, deleteProduct, exportProductsCsv } from "../api/products";
@@ -11,6 +11,8 @@ import ProductForm from "../components/ProductForm";
 import ImportProductsModal from "../components/ImportProductsModal";
 import ScanProductModal from "../components/ScanProductModal";
 import EmptyState from "../components/EmptyState";
+import ProductBarcode from "../components/ProductBarcode";
+
 
 export default function Products() {
   const { isManager, isAdmin } = useAuth();
@@ -26,6 +28,7 @@ export default function Products() {
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const highlightId = searchParams.get("highlight");
+  const [barcodeProduct, setBarcodeProduct] = useState(null);
 
   useEffect(() => {
     if (!highlightId) return;
@@ -257,6 +260,13 @@ export default function Products() {
                       </td>
                       <td className="px-6 py-4 text-sm text-right">
                         <div className="flex justify-end gap-3">
+                            <button
+                                  onClick={() => setBarcodeProduct(product)}
+                                  className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 transition-colors"
+                                >
+                                  <QrCode size={14} />
+                                  Barcode
+                            </button>
                           <Link
                             to={`/history?productId=${product.id}`}
                             className="text-slate-400 hover:text-white inline-flex items-center gap-1 transition-colors"
@@ -391,6 +401,40 @@ export default function Products() {
                 {deleteMutation.isPending ? "Deleting..." : "Delete"}
               </button>
             </div>
+          </div>
+        )}
+      </Modal>
+      {/* Barcode Display Modal */}
+      <Modal
+        isOpen={barcodeProduct !== null}
+        onClose={() => setBarcodeProduct(null)}
+        title="Product Barcode"
+        size="md"
+      >
+        {barcodeProduct && (
+          <div className="space-y-4">
+            <div>
+              <p className="text-white font-medium text-lg">{barcodeProduct.name}</p>
+              <p className="text-slate-400 text-sm font-mono">{barcodeProduct.sku}</p>
+            </div>
+
+            <div className="flex justify-center py-6">
+              <ProductBarcode value={barcodeProduct.sku} size="lg" />
+            </div>
+
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-3">
+              <p className="text-xs text-slate-400">
+                Scan this barcode with the camera scanner to look up this product instantly.
+                You can print it as a label or display it on a screen.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setBarcodeProduct(null)}
+              className="w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-medium transition-colors"
+            >
+              Close
+            </button>
           </div>
         )}
       </Modal>

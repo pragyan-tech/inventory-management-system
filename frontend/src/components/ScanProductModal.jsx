@@ -3,7 +3,7 @@ import { CheckCircle, AlertCircle, ScanLine } from "lucide-react";
 import { fetchProducts } from "../api/products";
 import Modal from "./Modal";
 import BarcodeScanner from "./BarcodeScanner";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 export default function ScanProductModal({ isOpen, onClose }) {
   const navigate = useNavigate();
@@ -13,6 +13,16 @@ export default function ScanProductModal({ isOpen, onClose }) {
   const [scanKey, setScanKey] = useState(0);
 
   const isProcessingRef = useRef(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      isProcessingRef.current = false;
+      setScanState("scanning");
+      setScannedCode(null);
+      setFoundProduct(null);
+      setScanKey((k) => k + 1);  // force BarcodeScanner to remount cleanly
+    }
+  }, [isOpen]);
 
   const handleScan = useCallback(async (decodedText) => {
 
